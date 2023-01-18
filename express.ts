@@ -28,7 +28,7 @@ app.get("/", async (req: any, res: any) => {
   await fs.readJson(filepath).then((json: any) => {
     let newJson = json;
 
-    let removeList = <number[]>[] 
+    let removeList = <number[]>[];
     // append the index of features to removeList if the parcel number is not in dihao
     newJson.features.forEach((feature: any, index: number) => {
       if (!dihao.includes(feature.properties["PARCELNO"])) {
@@ -36,16 +36,27 @@ app.get("/", async (req: any, res: any) => {
       }
     });
 
-    console.log("removeList", removeList)
-    console.log("newJson.features.length", newJson.features.length)
+    // tell which dihao is not in the features list
+    dihao.forEach((dihao: string) => {
+      if (
+        !newJson.features.some(
+          (feature: any) => feature.properties["PARCELNO"] === dihao
+        )
+      ) {
+        console.log("dihao not found:", dihao);
+      }
+    });
+
+    // console.log("removeList", removeList)
+    // console.log("newJson.features.length", newJson.features.length)
     // remove the features from newJson.features if they are in removeList (loop backwards)
     for (let i = removeList.length - 1; i >= 0; i--) {
       newJson.features.splice(removeList[i], 1);
     }
 
-    console.log("newJson.features.length", newJson.features.length)
+    // console.log("newJson.features.length", newJson.features.length)
     res.send(newJson);
-    console.log("response sent")
+    console.log("response sent");
   });
 });
 
